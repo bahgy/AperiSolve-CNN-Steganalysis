@@ -113,48 +113,278 @@ and avoids blocking the web worker. Identical submissions are deduplicated by
 a content hash, and derived images are cached with long-lived immutable HTTP
 headers, so repeat traffic is cheap.
 
-## Documentation
+# AperiSolve – CNN Steganalysis
 
-- [docs/adding-analyzer.md](docs/adding-analyzer.md) — add a new analyzer.
-- [docs/deploy.md](docs/deploy.md) — the tag-driven production deploy flow.
-- [CONTRIBUTING.md](CONTRIBUTING.md) — dev setup, tests, wiki pages, and translations.
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://www.docker.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-CPU-orange.svg)](https://pytorch.org/)
+
+AperiSolve is an open-source web-based steganalysis platform.
+This repository extends the original AperiSolve project with a
+Convolutional Neural Network (CNN) analyzer for detecting potential
+LSB (Least Significant Bit) steganography in images.
+
+## About This Project
+
+This project builds upon the original AperiSolve platform and adds
+a CNN-based image analysis component.
+
+The new analyzer uses a trained deep learning model to classify
+images into two categories:
+
+- **Cover:** An image classified as having no detected LSB steganography.
+- **Stego:** An image classified as potentially containing LSB steganography.
+
+The analyzer is integrated into the existing AperiSolve analysis
+workflow and can be used through its web interface.
+
+## Features
+
+### Original AperiSolve Features
+
+- Analyze images using multiple steganography tools.
+- Visualize image bit planes and color channels.
+- Generate color-remapped image variations.
+- Run multiple analyzers in parallel.
+- View analysis results through a web interface.
+- Use the built-in documentation and wiki.
+
+### CNN Steganalysis Extension
+
+- CNN-based image classification.
+- Detection of potential LSB steganography.
+- PyTorch model inference.
+- Automatic image preprocessing.
+- CPU-based inference.
+- Integration with the existing analyzer registry.
+
+## CNN Model
+
+The integrated model is a Convolutional Neural Network implemented
+using PyTorch.
+
+Its architecture includes:
+
+- Convolutional layers.
+- ReLU activation functions.
+- Max pooling layers.
+- Fully connected layers.
+- Two output classes: Cover and Stego.
+
+### Image Preprocessing
+
+Before inference, images go through the following steps:
+
+1. EXIF orientation correction.
+2. Conversion to grayscale.
+3. Resizing to 64 × 64 pixels.
+4. Least Significant Bit (LSB) extraction.
+5. CNN inference.
+6. Softmax-based class confidence calculation.
+
+### Important Model Limitations
+
+The current model was trained and evaluated using a small synthetic
+dataset generated for LSB steganalysis experiments.
+
+Although it achieved 100% accuracy on its synthetic test set,
+this result does not establish real-world detection accuracy.
+
+Performance on real-world images may vary. Confidence scores are
+model outputs and should not be considered guarantees.
+
+## Technology Stack
+
+- Python
+- Flask
+- PyTorch
+- NumPy
+- OpenCV / Pillow
+- PostgreSQL
+- Redis
+- RQ (Redis Queue)
+- Docker and Docker Compose
+
+## Getting Started
+
+### Prerequisites
+
+- Git
+- Docker
+- Docker Compose
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/bahgy/AperiSolve-CNN-Steganalysis.git
+# AperiSolve – CNN Steganalysis
+
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Docker](https://img.shields.io/badge/Docker-Supported-blue.svg)](https://www.docker.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-CPU-orange.svg)](https://pytorch.org/)
+
+AperiSolve is an open-source web-based steganalysis platform. This repository extends the original AperiSolve project with a Convolutional Neural Network (CNN) analyzer for detecting potential LSB (Least Significant Bit) steganography in images.
+
+## About This Project
+
+This project builds upon the original AperiSolve platform and adds a CNN-based image analysis component.
+
+The new analyzer uses a trained deep learning model to classify images into two categories:
+
+- **Cover:** An image classified as having no detected LSB steganography.
+- **Stego:** An image classified as potentially containing LSB steganography.
+
+The analyzer is integrated into the existing AperiSolve analysis workflow and can be used through its web interface.
+
+## Features
+
+### Original AperiSolve Features
+
+- Analyze images using multiple steganography tools.
+- Visualize image bit planes and color channels.
+- Generate color-remapped image variations.
+- Run multiple analyzers in parallel.
+- View analysis results through a web interface.
+- Use the built-in documentation and wiki.
+
+### CNN Steganalysis Extension
+
+- CNN-based image classification.
+- Detection of potential LSB steganography.
+- PyTorch model inference.
+- Automatic image preprocessing.
+- CPU-based inference.
+- Integration with the existing analyzer registry.
+
+## CNN Model
+
+The integrated model is a Convolutional Neural Network implemented using PyTorch.
+
+Its architecture includes:
+
+- Convolutional layers.
+- ReLU activation functions.
+- Max pooling layers.
+- Fully connected layers.
+- Two output classes: Cover and Stego.
+
+### Image Preprocessing
+
+Before inference, images go through the following steps:
+
+1. EXIF orientation correction.
+2. Conversion to grayscale.
+3. Resizing to 64 × 64 pixels.
+4. Least Significant Bit (LSB) extraction.
+5. CNN inference.
+6. Softmax-based class confidence calculation.
+
+### Important Model Limitations
+
+The current model was trained and evaluated using a small synthetic dataset generated for LSB steganalysis experiments.
+
+Although it achieved 100% accuracy on its synthetic test set, this result does not establish real-world detection accuracy.
+
+Performance on real-world images may vary. Confidence scores are model outputs and should not be considered guarantees.
+
+## Technology Stack
+
+- Python
+- Flask
+- PyTorch
+- NumPy
+- Pillow
+- PostgreSQL
+- Redis
+- RQ (Redis Queue)
+- Docker and Docker Compose
+
+## Getting Started
+
+### Prerequisites
+
+- Git
+- Docker
+- Docker Compose
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/bahgy/AperiSolve-CNN-Steganalysis.git
+cd AperiSolve-CNN-Steganalysis
+```
+
+### Configure Environment
+
+```bash
+cp .env.example .env
+```
+
+Review the environment variables in `.env` before running the application.
+
+### Build and Run
+
+```bash
+docker compose -f compose.dev.yml up -d --build
+```
+
+Open the application:
+
+- Web application: http://localhost:5000
+- RQ Dashboard: http://localhost:9181
+
+### Stop the Application
+
+```bash
+docker compose -f compose.dev.yml down
+```
+
+## Project Structure
+
+```text
+aperisolve/
+├── analyzers/
+│   └── cnn_steganalysis.py
+│
+├── cnn_models/
+│   ├── __init__.py
+│   ├── residual_model.py
+│   └── residual_lsb_hard_100pct.pth
+│
+└── ...
+
+Dockerfile
+pyproject.toml
+uv.lock
+compose.dev.yml
+README.md
+```
 
 ## Testing
 
+Install development dependencies:
+
 ```bash
 uv sync --extra dev
-uv run pytest -q            # unit tests (no services needed)
-
-# end-to-end analyzer tests through the running app:
-docker compose -f compose.dev.yml up -d
-uv run pytest tests/test_webapp_analyzers.py -v
 ```
 
-## Roadmap
+Run the test suite:
 
-See [Issues](../../issues).
+```bash
+uv run pytest -q
+```
 
-## Contributing
+## Original Project and Attribution
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+This repository is based on the original [AperiSolve](https://github.com/Zeecka/AperiSolve) project.
 
-## Security
+The original platform was created by **Zeecka** and its contributors.
 
-> [!WARNING]
-> If you discover a security issue, please report it privately to the repository owner instead of opening a public issue.
+This repository preserves the original project's attribution and extends it with CNN-based LSB steganalysis integration.
 
-## Credits
+**CNN integration and related modifications:**  
+[bahgy](https://github.com/bahgy)
 
-Thanks to donors:
-- [Philip Zimmermann](https://github.com/Philip-Zimmermann)
-- [Ed Guillory](#)
-- [Silje Hollås](#)
+## License
 
-Thanks to contributors:
-- [Zeecka](https://www.zeecka.fr/) - **(author)**
-- [aradhyacp](https://github.com/aradhyacp)
-- [Philip Zimmermann](https://github.com/Philip-Zimmermann)
-- [abneeeees](https://github.com/abneeeees)
-
-Thanks to the open-source community:
-[binwalk](https://github.com/ReFirmLabs/binwalk), [exiftool](https://exiftool.org/), [GraphicsMagick identify](http://www.graphicsmagick.org/identify.html), [foremost](https://foremost.sourceforge.net/), [jsteg](https://github.com/lukechampine/jsteg), [jphide/jpseek](https://github.com/h3xx/jphs), [openstego](https://www.openstego.com/), [outguess](https://www.rbcafe.com/software/outguess/), [pcrt](https://github.com/sherlly/PCRT), [pngcheck](https://www.libpng.org/pub/png/apps/pngcheck.html), [steghide](https://steghide.sourceforge.net/), [strings](https://pubs.opengroup.org/onlinepubs/9799919799/utilities/strings.html), [zsteg](https://github.com/zed-0xff/zsteg), ...
+This project retains the original license included in the repository. Please refer to the [LICENSE](LICENSE) file for details.

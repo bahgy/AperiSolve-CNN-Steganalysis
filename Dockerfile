@@ -1,7 +1,7 @@
 # ==========================
 # Stage 1 : Builder (download OpenStego)
 # ==========================
-FROM python:3.15-slim AS builder
+FROM python:3.12-slim AS builder
 
 # Install wget only to download OpenStego
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -42,7 +42,7 @@ RUN rm -rf /tmp/jphs
 # ==========================
 # Stage 2 : Image runtime minimale
 # ==========================
-FROM python:3.15-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -82,7 +82,7 @@ COPY pyproject.toml uv.lock ./
 COPY aperisolve/ ./aperisolve/
 
 # Install Python dependencies from pyproject.toml
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen --no-dev --index-strategy unsafe-best-match
 ENV PATH="/app/.venv/bin:$PATH"
 
 # Compile gettext catalogs (source .po files are committed; .mo are built)

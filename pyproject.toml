@@ -24,7 +24,9 @@ dependencies = [
     "Markdown",
     "Pygments",
     "flask-babel",
-    "Flask-Limiter[redis]"
+    "Flask-Limiter[redis]",
+    "torch>=2.15.0",
+    "torchvision>=0.29.2",
 ]
 
 [project.optional-dependencies]
@@ -44,6 +46,10 @@ dev = [
 [build-system]
 requires = ["setuptools>=83.0.0"]
 build-backend = "setuptools.build_meta"
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
 
 # Only package the application; other top-level dirs (docker/, tests/) must
 # not confuse setuptools' flat-layout auto-discovery.
@@ -95,3 +101,7 @@ testpaths = ["tests"]
 
 [tool.coverage.run]
 source = ["aperisolve"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+torchvision = { index = "pytorch-cpu" }
